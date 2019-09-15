@@ -30,13 +30,17 @@ public class IOUState implements ContractState, LinearState {
     private UniqueIdentifier linearId;
 
     public IOUState(Amount amount, Party lender, Party borrower) {
-        this.amount = amount;
-        this.lender = lender;
-        this.borrower = borrower;
+        this(amount, lender, borrower, new Amount(0, amount.getToken()), new UniqueIdentifier());
     }
 
     @ConstructorForDeserialization
-    public IOUState() {}
+    private IOUState(Amount amount, Party lender, Party borrower, Amount paid, UniqueIdentifier linearId) {
+        this.amount = amount;
+        this.lender = lender;
+        this.borrower = borrower;
+        this.paid = paid;
+        this.linearId = linearId;
+    }
 
     /**
      *  This method will return a list of the nodes which can "use" this state in a valid transaction. In this case, the
@@ -51,32 +55,16 @@ public class IOUState implements ContractState, LinearState {
         return amount;
     }
 
-    public void setAmount(Amount amount) {
-        this.amount = amount;
-    }
-
     public Party getLender() {
         return lender;
-    }
-
-    public void setLender(Party lender) {
-        this.lender = lender;
     }
 
     public Party getBorrower() {
         return borrower;
     }
 
-    public void setBorrower(Party borrower) {
-        this.borrower = borrower;
-    }
-
     public Amount getPaid() {
         return paid;
-    }
-
-    public void setPaid(Amount paid) {
-        this.paid = paid;
     }
 
     @NotNull
@@ -84,4 +72,16 @@ public class IOUState implements ContractState, LinearState {
     public UniqueIdentifier getLinearId() {
         return linearId;
     }
+
+    public IOUState pay(Amount amount) {
+        Amount amountPaid = this.paid.plus(amount);
+        return new IOUState(amount, lender, borrower, amountPaid, linearId);
+    }
+
+    public IOUState withNewLender(Party newLenderParty) {
+        return new IOUState(amount, newLenderParty, borrower, paid, linearId);
+    }
+
+
+
 }
