@@ -163,6 +163,8 @@ public class IOUStateTests {
         int paidIdx = fields.indexOf(IOUState.class.getDeclaredField("paid"));
         int linearIdIdx = fields.indexOf(IOUState.class.getDeclaredField("linearId"));
 
+        System.out.println(amountIdx + "-" + lenderIdx + "-" + borrowerIdx + "-" + paidIdx + "-" + linearIdIdx);
+
         assertTrue(amountIdx < lenderIdx);
         assertTrue(lenderIdx < borrowerIdx);
         assertTrue(borrowerIdx < paidIdx);

@@ -21,11 +21,11 @@ public class IOUState implements ContractState, LinearState {
 
     private Amount amount;
 
-    private Amount paid;
-
     private Party lender;
 
     private Party borrower;
+
+    private Amount paid;
 
     private UniqueIdentifier linearId;
 
@@ -63,20 +63,20 @@ public class IOUState implements ContractState, LinearState {
         this.lender = lender;
     }
 
-    public Amount getPaid() {
-        return paid;
-    }
-
-    public void setPaid(Amount paid) {
-        this.paid = paid;
-    }
-
     public Party getBorrower() {
         return borrower;
     }
 
     public void setBorrower(Party borrower) {
         this.borrower = borrower;
+    }
+
+    public Amount getPaid() {
+        return paid;
+    }
+
+    public void setPaid(Amount paid) {
+        this.paid = paid;
     }
 
     @NotNull
