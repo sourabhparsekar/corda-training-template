@@ -1,16 +1,22 @@
 package net.corda.training.state;
 
-import net.corda.core.contracts.*;
+import net.corda.core.contracts.Amount;
+import net.corda.core.contracts.ContractState;
+import net.corda.core.contracts.LinearState;
+import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.Party;
-import net.corda.finance.*;
-
-import static net.corda.training.TestUtils.*;
+import net.corda.finance.Currencies;
+import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Constructor;
-import org.junit.Test;
-import java.util.*;
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Currency;
+import java.util.List;
+
+import static net.corda.training.TestUtils.ALICE;
+import static net.corda.training.TestUtils.BOB;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Practical exercise instructions.
@@ -31,37 +37,37 @@ public class IOUStateTests {
      * Hint: {@link Amount} is a template class that takes a class parameter of the token you would like an {@link Amount} of.
      * As we are dealing with cash lent from one Party to another a sensible token to use would be {@link Currency}.
      */
-//    @Test
-//    public void hasIOUAmountFieldOfCorrectType() throws NoSuchFieldException {
-//        // Does the amount field exist?
-//        Field amountField = IOUState.class.getDeclaredField("amount");
-//        // Is the amount field of the correct type?
-//        assertTrue(amountField.getType().isAssignableFrom(Amount.class));
-//    }
+    @Test
+    public void hasIOUAmountFieldOfCorrectType() throws NoSuchFieldException {
+        // Does the amount field exist?
+        Field amountField = IOUState.class.getDeclaredField("amount");
+        // Is the amount field of the correct type?
+        assertTrue(amountField.getType().isAssignableFrom(Amount.class));
+    }
 
     /**
      * Task 2.
      * TODO: Add a 'lender' property of type {@link Party} to the {@link IOUState} class to get this test to pass.
      */
-//    @Test
-//    public void hasLenderFieldOfCorrectType() throws NoSuchFieldException {
-//        // Does the lender field exist?
-//        Field lenderField = IOUState.class.getDeclaredField("lender");
-//        // Is the lender field of the correct type?
-//        assertTrue(lenderField.getType().isAssignableFrom(Party.class));
-//    }
+    @Test
+    public void hasLenderFieldOfCorrectType() throws NoSuchFieldException {
+        // Does the lender field exist?
+        Field lenderField = IOUState.class.getDeclaredField("lender");
+        // Is the lender field of the correct type?
+        assertTrue(lenderField.getType().isAssignableFrom(Party.class));
+    }
 
     /**
      * Task 3.
      * TODO: Add a 'borrower' property of type {@link Party} to the {@link IOUState} class to get this test to pass.
      */
-//    @Test
-//    public void hasBorrowerFieldOfCorrectType() throws NoSuchFieldException {
-//        // Does the borrower field exist?
-//        Field borrowerField = IOUState.class.getDeclaredField("borrower");
-//        // Is the borrower field of the correct type?
-//        assertTrue(borrowerField.getType().isAssignableFrom(Party.class));
-//    }
+    @Test
+    public void hasBorrowerFieldOfCorrectType() throws NoSuchFieldException {
+        // Does the borrower field exist?
+        Field borrowerField = IOUState.class.getDeclaredField("borrower");
+        // Is the borrower field of the correct type?
+        assertTrue(borrowerField.getType().isAssignableFrom(Party.class));
+    }
 
     /**
      * Task 4.
@@ -75,34 +81,35 @@ public class IOUStateTests {
      *   [IOUState.amount] property. You can create an instance of the {@link Amount} class that takes a zero value and a token
      *   representing the currency - which should be the same currency as the [IOUState.amount] property.
      */
-//    @Test
-//    public void hasPaidFieldOfCorrectType() throws NoSuchFieldException {
-//        // Does the paid field exist?
-//        Field paidField = IOUState.class.getDeclaredField("paid");
-//        // Is the paid field of the correct type?
-//        assertTrue(paidField.getType().isAssignableFrom(Amount.class));
-//    }
+    @Test
+    public void hasPaidFieldOfCorrectType() throws NoSuchFieldException {
+        // Does the paid field exist?
+        Field paidField = IOUState.class.getDeclaredField("paid");
+        // Is the paid field of the correct type?
+        assertTrue(paidField.getType().isAssignableFrom(Amount.class));
+    }
+
 
     /**
      * Task 5.
      * TODO: Include the lender within the {@link IOUState#getParticipants()} list
      * Hint: [Arrays.asList()] takes any number of parameters and will add them to the list
      */
-//    @Test
-//    public void lenderIsParticipant() {
-//        IOUState iouState = new IOUState(Currencies.POUNDS(0), ALICE.getParty(), BOB.getParty());
-//        assertNotEquals(iouState.getParticipants().indexOf(ALICE.getParty()), -1);
-//    }
+    @Test
+    public void lenderIsParticipant() {
+        IOUState iouState = new IOUState(Currencies.POUNDS(0), ALICE.getParty(), BOB.getParty());
+        assertNotEquals(iouState.getParticipants().indexOf(ALICE.getParty()), -1);
+    }
 
     /**
      * Task 6.
      * TODO: Similar to the last task, include the borrower within the [IOUState.participants] list
      */
-//    @Test
-//    public void borrowerIsParticipant() {
-//        IOUState iouState = new IOUState(Currencies.POUNDS(0), ALICE.getParty(), BOB.getParty());
-//        assertNotEquals(iouState.getParticipants().indexOf(BOB.getParty()), -1);
-//    }
+    @Test
+    public void borrowerIsParticipant() {
+        IOUState iouState = new IOUState(Currencies.POUNDS(0), ALICE.getParty(), BOB.getParty());
+        assertNotEquals(iouState.getParticipants().indexOf(BOB.getParty()), -1);
+    }
 
     /**
      * Task 7.
@@ -111,10 +118,10 @@ public class IOUStateTests {
      * IntellIJ to automatically add the member definitions for you or you can add them yourself. Look at the definition
      * of {@link LinearState} for what requires adding.
      */
-//    @Test
-//    public void isLinearState() {
-//        assert(LinearState.class.isAssignableFrom(IOUState.class));
-//    }
+    @Test
+    public void isLinearState() {
+        assert (LinearState.class.isAssignableFrom(IOUState.class));
+    }
 
     /**
      * Task 8.
@@ -130,14 +137,14 @@ public class IOUStateTests {
      * the class schema. The default constructor should be selected as it allows for recreation of all the fields. To
      * accomplish this, add an @ConstructorForDeserialization annotation to the default constructor.
      */
-//    @Test
-//    public void hasLinearIdFieldOfCorrectType() throws NoSuchFieldException {
-//        // Does the linearId field exist?
-//        Field linearIdField = IOUState.class.getDeclaredField("linearId");
-//
-//        // Is the linearId field of the correct type?
-//        assertTrue(linearIdField.getType().isAssignableFrom(UniqueIdentifier.class));
-//    }
+    @Test
+    public void hasLinearIdFieldOfCorrectType() throws NoSuchFieldException {
+        // Does the linearId field exist?
+        Field linearIdField = IOUState.class.getDeclaredField("linearId");
+
+        // Is the linearId field of the correct type?
+        assertTrue(linearIdField.getType().isAssignableFrom(UniqueIdentifier.class));
+    }
 
     /**
      * Task 9.
@@ -145,22 +152,22 @@ public class IOUStateTests {
      * Hint: Make sure that the lender and borrower fields are not in the wrong order as this may cause some
      * confusion in subsequent tasks!
      */
-//    @Test
-//    public void checkIOUStateParameterOrdering() throws NoSuchFieldException {
-//
-//        List<Field> fields = Arrays.asList(IOUState.class.getDeclaredFields());
-//
-//        int amountIdx = fields.indexOf(IOUState.class.getDeclaredField("amount"));
-//        int lenderIdx = fields.indexOf(IOUState.class.getDeclaredField("lender"));
-//        int borrowerIdx = fields.indexOf(IOUState.class.getDeclaredField("borrower"));
-//        int paidIdx = fields.indexOf(IOUState.class.getDeclaredField("paid"));
-//        int linearIdIdx = fields.indexOf(IOUState.class.getDeclaredField("linearId"));
-//
-//        assertTrue(amountIdx < lenderIdx);
-//        assertTrue(lenderIdx < borrowerIdx);
-//        assertTrue(borrowerIdx < paidIdx);
-//        assertTrue(paidIdx < linearIdIdx);
-//    }
+    @Test
+    public void checkIOUStateParameterOrdering() throws NoSuchFieldException {
+
+        List<Field> fields = Arrays.asList(IOUState.class.getDeclaredFields());
+
+        int amountIdx = fields.indexOf(IOUState.class.getDeclaredField("amount"));
+        int lenderIdx = fields.indexOf(IOUState.class.getDeclaredField("lender"));
+        int borrowerIdx = fields.indexOf(IOUState.class.getDeclaredField("borrower"));
+        int paidIdx = fields.indexOf(IOUState.class.getDeclaredField("paid"));
+        int linearIdIdx = fields.indexOf(IOUState.class.getDeclaredField("linearId"));
+
+        assertTrue(amountIdx < lenderIdx);
+        assertTrue(lenderIdx < borrowerIdx);
+        assertTrue(borrowerIdx < paidIdx);
+        assertTrue(paidIdx < linearIdIdx);
+    }
 
     /**
      * Task 10.
