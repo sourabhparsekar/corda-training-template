@@ -10,12 +10,13 @@ import net.corda.core.identity.Party;
 import net.corda.core.serialization.ConstructorForDeserialization;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Currency;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is where you'll add the definition of your state object. Look at the unit tests in [IOUStateTests] for
  * instructions on how to complete the [IOUState] class.
- *
  */
 public class IOUState implements ContractState, LinearState {
 
@@ -43,8 +44,8 @@ public class IOUState implements ContractState, LinearState {
     }
 
     /**
-     *  This method will return a list of the nodes which can "use" this state in a valid transaction. In this case, the
-     *  lender or the borrower.
+     * This method will return a list of the nodes which can "use" this state in a valid transaction. In this case, the
+     * lender or the borrower.
      */
     @Override
     public List<AbstractParty> getParticipants() {
@@ -83,5 +84,33 @@ public class IOUState implements ContractState, LinearState {
     }
 
 
+    /**
+     * Copy/clone constructor
+     *
+     * @param amount
+     * @param lender
+     * @param borrower
+     * @param paid
+     * @return
+     */
+    public ContractState copy(Amount<Currency> amount, Party lender, Party borrower, Amount<Currency> paid) {
+        return new IOUState(amount, lender, borrower, paid, this.linearId);
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IOUState iouState = (IOUState) o;
+        return Objects.equals(amount, iouState.amount) &&
+                Objects.equals(lender, iouState.lender) &&
+                Objects.equals(borrower, iouState.borrower) &&
+                Objects.equals(paid, iouState.paid) &&
+                Objects.equals(linearId, iouState.linearId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(amount, lender, borrower, paid, linearId);
+    }
 }

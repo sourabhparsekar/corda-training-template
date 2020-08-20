@@ -91,6 +91,13 @@ public class IOUContract implements Contract {
                 req.using("An IOU transfer transaction should only consume one input state.", tx.getInputStates().size() == 1);
                 req.using("An IOU transfer transaction should only create one output state.", tx.getOutputStates().size() == 1);
 
+                //Task 3. Add a constraint to the contract code to ensure only the lender property can change when transferring IOUs.
+                IOUState iouInputState = (IOUState) tx.getInputStates().get(0);
+                IOUState iouOutputState = (IOUState) tx.getOutputStates().get(0);
+                IOUState iouOutputStateToBeChecked = iouOutputState.withNewLender(iouInputState.getLender());
+
+                //equals to be overridden in iou contract for this to work else have to check each field
+                req.using("Only the lender property may change.", iouOutputStateToBeChecked.equals(iouInputState));
 
                 return null;
             });
