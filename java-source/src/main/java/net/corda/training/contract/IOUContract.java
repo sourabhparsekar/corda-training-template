@@ -92,8 +92,9 @@ public class IOUContract implements Contract {
                 req.using("An IOU transfer transaction should only create one output state.", tx.getOutputStates().size() == 1);
 
                 //Task 3. Add a constraint to the contract code to ensure only the lender property can change when transferring IOUs.
-                IOUState iouInputState = (IOUState) tx.getInputStates().get(0);
-                IOUState iouOutputState = (IOUState) tx.getOutputStates().get(0);
+                IOUState iouInputState = tx.inputsOfType(IOUState.class).get(0);
+                //can be also written as tx.getInputStates().get(0)
+                IOUState iouOutputState = tx.outputsOfType(IOUState.class).get(0);
                 IOUState iouOutputStateToBeChecked = iouOutputState.withNewLender(iouInputState.getLender());
 
                 //equals to be overridden in iou contract for this to work else have to check each field
@@ -102,6 +103,21 @@ public class IOUContract implements Contract {
                 //Task 4. It is fairly obvious that in a transfer IOU transaction the lender must change.
                 req.using("The lender property must change in a transfer.", !iouOutputState.getLender().equals(iouInputState.getLender()));
 
+                //Task 5. All the participants in a transfer IOU transaction must sign.
+                Set<PublicKey> publicKeysSet = new HashSet<>();
+                tx.getCommands().get(0).getSigners().forEach(publicKey ->
+                        publicKeysSet.add(publicKey)
+                );
+
+                Set<PublicKey> participantKeysSet = new HashSet<>();
+                iouOutputState.getParticipants().forEach(abstractParty ->
+                        participantKeysSet.add(abstractParty.getOwningKey())
+                );
+                //add new lender signature
+                participantKeysSet.add(iouInputState.getLender().getOwningKey());
+
+                //output state should have same participants as command
+                req.using("The borrower, old lender and new lender only must sign an IOU transfer transaction", publicKeysSet.size() == participantKeysSet.size() && publicKeysSet.containsAll(participantKeysSet));
 
                 return null;
             });

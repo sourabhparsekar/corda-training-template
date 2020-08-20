@@ -1,13 +1,10 @@
 package net.corda.training.contract;
 
-import com.google.common.collect.ImmutableList;
-import net.corda.core.contracts.*;
 import net.corda.core.contracts.Amount;
 import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.PartyAndReference;
 import net.corda.core.contracts.TypeOnlyCommandData;
 import net.corda.core.identity.AbstractParty;
-import net.corda.core.serialization.CordaSerializable;
 import net.corda.core.utilities.OpaqueBytes;
 import net.corda.finance.Currencies;
 import net.corda.finance.contracts.asset.Cash;
@@ -15,10 +12,8 @@ import net.corda.testing.node.MockServices;
 import net.corda.training.state.IOUState;
 import org.junit.Test;
 
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Currency;
-import java.util.List;
 
 import static net.corda.testing.node.NodeTestUtils.ledger;
 import static net.corda.training.TestUtils.*;
@@ -33,7 +28,8 @@ import static net.corda.training.TestUtils.*;
 public class IOUTransferTests {
 
     public interface Commands extends CommandData {
-        class DummyCommand extends TypeOnlyCommandData implements Commands{}
+        class DummyCommand extends TypeOnlyCommandData implements Commands {
+        }
     }
 
     static private final MockServices ledgerServices = new MockServices(
@@ -62,21 +58,21 @@ public class IOUTransferTests {
      * Hint:
      * - As with the [Issue] command, add the [Transfer] command within the [IOUContract.Commands].
      * - Again, we only care about the existence of the [Transfer] command in a transaction, therefore it should
-     *   subclass the [TypeOnlyCommandData].
+     * subclass the [TypeOnlyCommandData].
      * - You can use the [requireSingleCommand] function to check for the existence of a command which implements a
-     *   specified interface:
-     *
-     *       final CommandWithParties<Commands> command = requireSingleCommand(tx.getCommands(), Commands.class);
-     *       final Commands commandData = command.getValue();
-     *
-     *   To match any command that implements [IOUContract.Commands]
+     * specified interface:
+     * <p>
+     * final CommandWithParties<Commands> command = requireSingleCommand(tx.getCommands(), Commands.class);
+     * final Commands commandData = command.getValue();
+     * <p>
+     * To match any command that implements [IOUContract.Commands]
      * - We then need conditional logic based on the type of [Command.value], in Java you can do this using an "if-else" statement
      * - For each "if", or "elseIf" block, you can check the type of [Command.value]:
-     *
-     *        if (commandData.equals(new Commands.Issue())) {
-     *        requireThat(require -> {...})
-     *        } else if (...) {}
-     *
+     * <p>
+     * if (commandData.equals(new Commands.Issue())) {
+     * requireThat(require -> {...})
+     * } else if (...) {}
+     * <p>
      * - The [requireSingleCommand] function will handle unrecognised types for you (see first unit test).
      */
     @Test
@@ -141,7 +137,7 @@ public class IOUTransferTests {
             l.transaction(tx -> {
                 tx.input(IOUContract.IOU_CONTRACT_ID, iou);
                 tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
-                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()),new IOUContract.Commands.Transfer());
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
                 return tx.verifies();
             });
             return null;
@@ -157,7 +153,7 @@ public class IOUTransferTests {
      * - You'll need references to the input and output ious.
      * - Remember you need to cast the [ContractState]s to [IOUState]s.
      * - It's easier to take this approach then check all properties other than the lender haven't changed, including
-     *   the [linearId] and the [contract]!
+     * the [linearId] and the [contract]!
      */
     @Test
     public void onlyTheLenderMayChange() {
@@ -222,48 +218,48 @@ public class IOUTransferTests {
      * All the participants in a transfer IOU transaction must sign.
      * TODO: Add a constraint to check the old lender, the new lender and the recipient have signed.
      */
-//    @Test
-//    public void allParticipantsMustSign() {
-//        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
-//        ledger(ledgerServices, l -> {
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(CHARLIE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), MINICORP.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey(), MINICORP.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.verifies();
-//            });
-//            return null;
-//        });
-//    }
+    @Test
+    public void allParticipantsMustSign() {
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
+        ledger(ledgerServices, l -> {
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(CHARLIE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), MINICORP.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey(), MINICORP.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("The borrower, old lender and new lender only must sign an IOU transfer transaction");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.verifies();
+            });
+            return null;
+        });
+    }
 
 }
