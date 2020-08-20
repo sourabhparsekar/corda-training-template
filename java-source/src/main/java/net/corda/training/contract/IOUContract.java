@@ -1,23 +1,18 @@
 package net.corda.training.contract;
 
-import net.corda.core.contracts.*;
+import net.corda.core.contracts.CommandData;
+import net.corda.core.contracts.CommandWithParties;
+import net.corda.core.contracts.Contract;
+import net.corda.core.contracts.TypeOnlyCommandData;
+import net.corda.core.transactions.LedgerTransaction;
+import net.corda.training.state.IOUState;
+
+import java.security.PublicKey;
+import java.util.HashSet;
+import java.util.Set;
 
 import static net.corda.core.contracts.ContractsDSL.requireSingleCommand;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
-
-import net.corda.core.identity.AbstractParty;
-import net.corda.core.identity.Party;
-import net.corda.core.transactions.LedgerTransaction;
-
-import net.corda.finance.contracts.asset.Cash;
-import net.corda.training.state.IOUState;
-
-import javax.swing.plaf.nimbus.State;
-import javax.validation.constraints.NotNull;
-import java.lang.reflect.Array;
-import java.security.PublicKey;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This is where you'll add the contract code which defines how the [IOUState] behaves. Looks at the unit tests in
@@ -35,8 +30,11 @@ public class IOUContract implements Contract {
         // Add commands here.
         // E.g
         // class DoSomething extends TypeOnlyCommandData implements Commands{}
-        class Issue extends TypeOnlyCommandData implements Commands {}
-        class Transfer extends TypeOnlyCommandData implements Commands {}
+        class Issue extends TypeOnlyCommandData implements Commands {
+        }
+
+        class Transfer extends TypeOnlyCommandData implements Commands {
+        }
 
     }
 
@@ -52,7 +50,7 @@ public class IOUContract implements Contract {
         final Commands commands = commandWithParties.getValue();
 
         //for this command check
-        if(commands.equals(new Commands.Issue())) {
+        if (commands.equals(new Commands.Issue())) {
             requireThat(req -> {
 
                 //Task 2. As previously observed, issue transactions should not have any input state references. Therefore we must check to ensure that no input states are included in a transaction to issue an IOU.
@@ -72,20 +70,30 @@ public class IOUContract implements Contract {
                 //Task 6. The list of public keys which the commands hold should contain all of the participants defined in the {@link IOUState}.
                 Set<PublicKey> publicKeysSet = new HashSet<>();
                 tx.getCommands().get(0).getSigners().forEach(publicKey ->
-                    publicKeysSet.add(publicKey)
+                        publicKeysSet.add(publicKey)
                 );
 
                 Set<PublicKey> participantKeysSet = new HashSet<>();
                 tx.getOutputStates().get(0).getParticipants().forEach(abstractParty ->
-                    participantKeysSet.add(abstractParty.getOwningKey())
+                        participantKeysSet.add(abstractParty.getOwningKey())
                 );
 
                 //both input tx and output state should have same participants
-                req.using("Both lender and borrower together only may sign IOU issue transaction.", publicKeysSet.size()== participantKeysSet.size() && publicKeysSet.containsAll(participantKeysSet));
+                req.using("Both lender and borrower together only may sign IOU issue transaction.", publicKeysSet.size() == participantKeysSet.size() && publicKeysSet.containsAll(participantKeysSet));
 
                 return null;
             });
-        } else if(commands.equals(new Commands.Transfer())) {
+        } else if (commands.equals(new Commands.Transfer())) {
+
+            requireThat(req -> {
+
+                //Task 2. The transfer transaction should only have one input state and one output state.
+                req.using("An IOU transfer transaction should only consume one input state.", tx.getInputStates().size() == 1);
+                req.using("An IOU transfer transaction should only create one output state.", tx.getOutputStates().size() == 1);
+
+
+                return null;
+            });
 
         }
     }

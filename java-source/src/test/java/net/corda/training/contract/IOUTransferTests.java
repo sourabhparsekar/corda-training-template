@@ -110,43 +110,43 @@ public class IOUTransferTests {
      * Hint:
      * - Look at the contract code for "Issue".
      */
-//    @Test
-//    public void mustHaveOneInputAndOneOutput() {
-//        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
-//        ledger(ledgerServices, l -> {
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.input(IOUContract.IOU_CONTRACT_ID, dummyState);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("An IOU transfer transaction should only consume one input state.");
-//            });
-//            l.transaction(tx -> {
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("An IOU transfer transaction should only consume one input state.");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("An IOU transfer transaction should only create one output state.");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
-//                tx.output(IOUContract.IOU_CONTRACT_ID, dummyState);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith(" An IOU transfer transaction should only create one output state.");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()),new IOUContract.Commands.Transfer());
-//                return tx.verifies();
-//            });
-//            return null;
-//        });
-//    }
+    @Test
+    public void mustHaveOneInputAndOneOutput() {
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
+        ledger(ledgerServices, l -> {
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.input(IOUContract.IOU_CONTRACT_ID, dummyState);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("An IOU transfer transaction should only consume one input state.");
+            });
+            l.transaction(tx -> {
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("An IOU transfer transaction should only consume one input state.");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("An IOU transfer transaction should only create one output state.");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
+                tx.output(IOUContract.IOU_CONTRACT_ID, dummyState);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith(" An IOU transfer transaction should only create one output state.");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()),new IOUContract.Commands.Transfer());
+                return tx.verifies();
+            });
+            return null;
+        });
+    }
 
     /**
      * Task 3.
