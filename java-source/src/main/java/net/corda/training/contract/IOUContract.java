@@ -35,9 +35,8 @@ public class IOUContract implements Contract {
         // Add commands here.
         // E.g
         // class DoSomething extends TypeOnlyCommandData implements Commands{}
-        class Issue extends TypeOnlyCommandData implements Commands {
-
-        }
+        class Issue extends TypeOnlyCommandData implements Commands {}
+        class Transfer extends TypeOnlyCommandData implements Commands {}
 
     }
 
@@ -49,8 +48,8 @@ public class IOUContract implements Contract {
     public void verify(LedgerTransaction tx) {
         // Add contract code here.
         //get commands
-        CommandWithParties<Commands> commandWithParties = requireSingleCommand(tx.getCommands(), Commands.class);
-        Commands commands = commandWithParties.getValue();
+        final CommandWithParties<Commands> commandWithParties = requireSingleCommand(tx.getCommands(), Commands.class);
+        final Commands commands = commandWithParties.getValue();
 
         //for this command check
         if(commands.equals(new Commands.Issue())) {
@@ -86,6 +85,8 @@ public class IOUContract implements Contract {
 
                 return null;
             });
+        } else if(commands.equals(new Commands.Transfer())) {
+
         }
     }
 }

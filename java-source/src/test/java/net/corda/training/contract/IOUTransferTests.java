@@ -43,15 +43,15 @@ public class IOUTransferTests {
     /**
      * Uncomment the testing setup below.
      */
-//    // A dummy state
-//    IOUState dummyState = new IOUState(Currencies.DOLLARS(0), CHARLIE.getParty(), CHARLIE.getParty());
-//
-//    // function to create new Cash states.
-//    private Cash.State createCashState(AbstractParty owner, Amount<Currency> amount) {
-//        OpaqueBytes defaultBytes = new OpaqueBytes(new byte[1]);
-//        PartyAndReference partyAndReference = new PartyAndReference(owner, defaultBytes);
-//        return new Cash.State(partyAndReference, amount, owner);
-//    }
+    // A dummy state
+    IOUState dummyState = new IOUState(Currencies.DOLLARS(0), CHARLIE.getParty(), CHARLIE.getParty());
+
+    // function to create new Cash states.
+    private Cash.State createCashState(AbstractParty owner, Amount<Currency> amount) {
+        OpaqueBytes defaultBytes = new OpaqueBytes(new byte[1]);
+        PartyAndReference partyAndReference = new PartyAndReference(owner, defaultBytes);
+        return new Cash.State(partyAndReference, amount, owner);
+    }
 
     /**
      * Task 1.
@@ -79,29 +79,29 @@ public class IOUTransferTests {
      *
      * - The [requireSingleCommand] function will handle unrecognised types for you (see first unit test).
      */
-//    @Test
-//    public void mustHandleMultipleCommandValues() {
-//        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
-//        ledger(ledgerServices, l -> {
-//            l.transaction(tx -> {
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new Commands.DummyCommand());
-//                return tx.failsWith("Required net.corda.training.contract.IOUContract.Commands command");
-//            });
-//            l.transaction(tx -> {
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Issue());
-//                return tx.verifies();
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.verifies();
-//            });
-//            return null;
-//        });
-//    }
+    @Test
+    public void mustHandleMultipleCommandValues() {
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
+        ledger(ledgerServices, l -> {
+            l.transaction(tx -> {
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new Commands.DummyCommand());
+                return tx.failsWith("Required net.corda.training.contract.IOUContract.Commands command");
+            });
+            l.transaction(tx -> {
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Issue());
+                return tx.verifies();
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.withNewLender(CHARLIE.getParty()));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.verifies();
+            });
+            return null;
+        });
+    }
 
     /**
      * Task 2.
