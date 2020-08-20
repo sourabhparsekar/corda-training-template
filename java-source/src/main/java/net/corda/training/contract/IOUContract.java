@@ -35,6 +35,10 @@ public class IOUContract implements Contract {
         // Add commands here.
         // E.g
         // class DoSomething extends TypeOnlyCommandData implements Commands{}
+        class Issue extends TypeOnlyCommandData implements Commands {
+
+        }
+
     }
 
     /**
@@ -44,8 +48,44 @@ public class IOUContract implements Contract {
     @Override
     public void verify(LedgerTransaction tx) {
         // Add contract code here.
-        // requireThat(req -> {
-        //     ...
-        // });
+        //get commands
+        CommandWithParties<Commands> commandWithParties = requireSingleCommand(tx.getCommands(), Commands.class);
+        Commands commands = commandWithParties.getValue();
+
+        //for this command check
+        if(commands.equals(new Commands.Issue())) {
+            requireThat(req -> {
+
+                //Task 2. As previously observed, issue transactions should not have any input state references. Therefore we must check to ensure that no input states are included in a transaction to issue an IOU.
+                req.using("No inputs should be consumed when issuing an IOU", tx.getInputStates().size() == 0);
+
+                //Task 3. Now we need to ensure that only one {@link IOUState} is issued per transaction.
+                req.using("Only one output state should be created when issuing an IOU.", tx.getOutputStates().size() == 1);
+
+                IOUState iouOutputState = tx.outputsOfType(IOUState.class).get(0);
+
+                //Task 4. Now we need to consider the properties of the {@link IOUState}. We need to ensure that an IOU should always have a positive value.
+                req.using("A newly issued IOU must have a positive amount.", iouOutputState.getAmount().getQuantity() > 0);
+
+                //Task 5. For obvious reasons, the identity of the lender and borrower must be different.
+                req.using("The lender and borrower cannot have the same identity.", iouOutputState.getLender().getOwningKey() != iouOutputState.getBorrower().getOwningKey());
+
+                //Task 6. The list of public keys which the commands hold should contain all of the participants defined in the {@link IOUState}.
+                Set<PublicKey> publicKeysSet = new HashSet<>();
+                tx.getCommands().get(0).getSigners().forEach(publicKey ->
+                    publicKeysSet.add(publicKey)
+                );
+
+                Set<PublicKey> participantKeysSet = new HashSet<>();
+                tx.getOutputStates().get(0).getParticipants().forEach(abstractParty ->
+                    participantKeysSet.add(abstractParty.getOwningKey())
+                );
+
+                //both input tx and output state should have same participants
+                req.using("Both lender and borrower together only may sign IOU issue transaction.", publicKeysSet.size()== participantKeysSet.size() && publicKeysSet.containsAll(participantKeysSet));
+
+                return null;
+            });
+        }
     }
 }
