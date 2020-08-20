@@ -99,6 +99,10 @@ public class IOUContract implements Contract {
                 //equals to be overridden in iou contract for this to work else have to check each field
                 req.using("Only the lender property may change.", iouOutputStateToBeChecked.equals(iouInputState));
 
+                //Task 4. It is fairly obvious that in a transfer IOU transaction the lender must change.
+                req.using("The lender property must change in a transfer.", !iouOutputState.getLender().equals(iouInputState.getLender()));
+
+
                 return null;
             });
 

@@ -197,25 +197,25 @@ public class IOUTransferTests {
      * It is fairly obvious that in a transfer IOU transaction the lender must change.
      * TODO: Add a constraint to check the lender has changed in the output IOU.
      */
-//    @Test
-//    public void theLenderMustChange() {
-//        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
-//        ledger(ledgerServices, l -> {
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.failsWith("The lender property must change in a transfer.");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
-//                return tx.verifies();
-//            });
-//            return null;
-//        });
-//    }
+    @Test
+    public void theLenderMustChange() {
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty());
+        ledger(ledgerServices, l -> {
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.failsWith("The lender property must change in a transfer.");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.copy(Currencies.DOLLARS(10), CHARLIE.getParty(), BOB.getParty(), Currencies.DOLLARS(0)));
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey(), CHARLIE.getPublicKey()), new IOUContract.Commands.Transfer());
+                return tx.verifies();
+            });
+            return null;
+        });
+    }
 
     /**
      * Task 5.
