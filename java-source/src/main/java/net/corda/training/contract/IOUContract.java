@@ -1,14 +1,12 @@
 package net.corda.training.contract;
 
-import net.corda.core.contracts.CommandData;
-import net.corda.core.contracts.CommandWithParties;
-import net.corda.core.contracts.Contract;
-import net.corda.core.contracts.TypeOnlyCommandData;
+import net.corda.core.contracts.*;
 import net.corda.core.transactions.LedgerTransaction;
 import net.corda.training.state.IOUState;
 
 import java.security.PublicKey;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static net.corda.core.contracts.ContractsDSL.requireSingleCommand;
@@ -124,9 +122,16 @@ public class IOUContract implements Contract {
                 return null;
             });
 
-        } else if (commands.equals(new Commands.Transfer())) {
+        } else if (commands.equals(new Commands.Settle())) {
 
             requireThat(req -> {
+
+                //Task 2.
+                //     * For now, we only want to settle one IOU at once. We can use the [TransactionForContract.groupStates] function
+                //     * to group the IOUs by their [linearId] property. We want to make sure there is only one group of input and output
+                //     * IOUs.
+                List<LedgerTransaction.InOutGroup<IOUState, UniqueIdentifier>> inOutGroupList = tx.groupStates(IOUState.class, IOUState::getLinearId);
+                req.using("List has more than one element.", inOutGroupList.size() == 1);
 
                 return null;
             });

@@ -101,38 +101,38 @@ public class IOUSettleTests {
      *       tx.groupStates(State.class, State::getLinearId)
      *
      */
-//    @Test
-//    public void mustBeOneGroupOfIOUs() {
-//        IOUState iouONE = new IOUState(Currencies.POUNDS(10), ALICE.getParty(), BOB.getParty());
-//        IOUState iouTWO = new IOUState(Currencies.POUNDS(5), ALICE.getParty(), BOB.getParty());
-//        Cash.State inputCash = createCashState(BOB.getParty(), Currencies.POUNDS(5));
-//        CommandAndState outputCash = inputCash.withNewOwner(ALICE.getParty());
-//
-//        ledger(ledgerServices, l -> {
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iouONE);
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iouTWO);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Settle());
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
-//                tx.input(Cash.class.getName(), inputCash);
-//                tx.output(Cash.class.getName(), outputCash.getOwnableState());
-//                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.failsWith("List has more than one element.");
-//                return null;
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iouONE);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Settle());
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
-//                tx.input(Cash.class.getName(), inputCash);
-//                tx.output(Cash.class.getName(), outputCash.getOwnableState());
-//                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.verifies();
-//                return null;
-//            });
-//            return null;
-//        });
-//    }
+    @Test
+    public void mustBeOneGroupOfIOUs() {
+        IOUState iouONE = new IOUState(Currencies.POUNDS(10), ALICE.getParty(), BOB.getParty());
+        IOUState iouTWO = new IOUState(Currencies.POUNDS(5), ALICE.getParty(), BOB.getParty());
+        Cash.State inputCash = createCashState(BOB.getParty(), Currencies.POUNDS(5));
+        CommandAndState outputCash = inputCash.withNewOwner(ALICE.getParty());
+
+        ledger(ledgerServices, l -> {
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iouONE);
+                tx.input(IOUContract.IOU_CONTRACT_ID, iouTWO);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Settle());
+                tx.output(IOUContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
+                tx.input(Cash.class.getName(), inputCash);
+                tx.output(Cash.class.getName(), outputCash.getOwnableState());
+                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
+                tx.failsWith("List has more than one element.");
+                return null;
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iouONE);
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Settle());
+                tx.output(IOUContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
+                tx.input(Cash.class.getName(), inputCash);
+                tx.output(Cash.class.getName(), outputCash.getOwnableState());
+                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
+                tx.verifies();
+                return null;
+            });
+            return null;
+        });
+    }
 
     /**
      * Task 3.
