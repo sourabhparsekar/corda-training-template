@@ -36,6 +36,8 @@ public class IOUContract implements Contract {
         class Transfer extends TypeOnlyCommandData implements Commands {
         }
 
+        class Settle extends TypeOnlyCommandData implements Commands {
+        }
     }
 
     /**
@@ -118,6 +120,13 @@ public class IOUContract implements Contract {
 
                 //output state should have same participants as command
                 req.using("The borrower, old lender and new lender only must sign an IOU transfer transaction", publicKeysSet.size() == participantKeysSet.size() && publicKeysSet.containsAll(participantKeysSet));
+
+                return null;
+            });
+
+        } else if (commands.equals(new Commands.Transfer())) {
+
+            requireThat(req -> {
 
                 return null;
             });

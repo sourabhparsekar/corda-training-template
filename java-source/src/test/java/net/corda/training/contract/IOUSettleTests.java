@@ -52,41 +52,41 @@ public class IOUSettleTests {
      * TODO: Add the [IOUContract.Commands.Settle] case to the verify function.
      * Hint: You can leave the body empty for now.
      */
-//    @Test
-//    public void mustIncludeSettleCommand() {
-//        IOUState iou = new IOUState(Currencies.POUNDS(10), ALICE.getParty(), BOB.getParty());
-//        Cash.State inputCash = createCashState(BOB.getParty(), Currencies.POUNDS(5));
-//        OwnableState outputCash = inputCash.withNewOwner(ALICE.getParty()).getOwnableState();
-//
-//        ledger(ledgerServices, l -> {
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.input(Cash.class.getName(), inputCash);
-//                tx.output(Cash.class.getName(), outputCash);
-//                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                return tx.failsWith("Contract Verification Failed");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.input(Cash.class.getName(), inputCash);
-//                tx.output(Cash.class.getName(), outputCash);
-//                tx.command(BOB.getPublicKey(), new Commands.DummyCommand());
-//                return tx.failsWith("Contract verification failed");
-//            });
-//            l.transaction(tx -> {
-//                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
-//                tx.output(IOUContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.input(Cash.class.getName(), inputCash);
-//                tx.output(Cash.class.getName(), outputCash);
-//                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Settle());
-//                return tx.verifies();
-//            });
-//            return null;
-//        });
-//    }
+    @Test
+    public void mustIncludeSettleCommand() {
+        IOUState iou = new IOUState(Currencies.POUNDS(10), ALICE.getParty(), BOB.getParty());
+        Cash.State inputCash = createCashState(BOB.getParty(), Currencies.POUNDS(5));
+        OwnableState outputCash = inputCash.withNewOwner(ALICE.getParty()).getOwnableState();
+
+        ledger(ledgerServices, l -> {
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+                tx.input(Cash.class.getName(), inputCash);
+                tx.output(Cash.class.getName(), outputCash);
+                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
+                return tx.failsWith("Contract Verification Failed");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+                tx.input(Cash.class.getName(), inputCash);
+                tx.output(Cash.class.getName(), outputCash);
+                tx.command(BOB.getPublicKey(), new Commands.DummyCommand());
+                return tx.failsWith("Contract verification failed");
+            });
+            l.transaction(tx -> {
+                tx.input(IOUContract.IOU_CONTRACT_ID, iou);
+                tx.output(IOUContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+                tx.input(Cash.class.getName(), inputCash);
+                tx.output(Cash.class.getName(), outputCash);
+                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
+                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new IOUContract.Commands.Settle());
+                return tx.verifies();
+            });
+            return null;
+        });
+    }
 
     /**
      * Task 2.
